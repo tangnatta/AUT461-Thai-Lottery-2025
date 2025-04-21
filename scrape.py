@@ -49,7 +49,7 @@ class ThaiLotteryScraper:
             if len(all_values) < 10:
                 continue
 
-            print(all_values)  # Debugging line to check the values
+            # print(all_values)  # Debugging line to check the values
 
             day = all_values[0]
             month = all_values[1]
@@ -60,7 +60,7 @@ class ThaiLotteryScraper:
             bottom_two = all_values[8]
             front_last_three = all_values[9]
             front_three = front_last_three.split(' ')[:2]
-            last_three = front_last_three.split(' ')[1:-1]
+            last_three = front_last_three.split(' ')[2:]
 
             # Convert date
             gregorian_year = int(year) - 543
