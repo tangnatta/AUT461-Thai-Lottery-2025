@@ -22,7 +22,7 @@ class ThaiLotteryScraper:
         """Fetch HTML data from the lottery website"""
         assert isinstance(year, int), "Year must be an integer"
         assert year > 0, "Year must be a positive integer"
-        assert year <= 35, "Year must be less than or equal 35"
+        # assert year <= 35, "Year must be less than or equal 35"
 
         url = self.base_url.format(year=year)
         response = requests.get(url, headers=self.headers, timeout=10)
