@@ -49,11 +49,14 @@ class ThaiLotteryScraper:
             if len(all_values) < 10:
                 continue
 
+            print(all_values)  # Debugging line to check the values
+
             day = all_values[0]
             month = all_values[1]
             year = all_values[3]
             first_prize = all_values[5]
             last_two = all_values[6]
+            top_three = all_values[7]
             bottom_two = all_values[8]
             front_last_three = all_values[9]
             front_three = front_last_three.split(' ')[:2]
@@ -71,7 +74,7 @@ class ThaiLotteryScraper:
                 'ปี': year,
                 'รางวัลที่1': first_prize,
                 '2ตัวบน': last_two,
-                '3ตัวบน': last_three,
+                '3ตัวบน': top_three,
                 '2ตัวล่าง': bottom_two,
                 '3ตัวหน้า,3ตัวล่าง': front_last_three,
                 '3ตัวหน้า': front_three,
