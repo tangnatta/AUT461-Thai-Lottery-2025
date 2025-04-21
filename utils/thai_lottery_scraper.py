@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 import pandas as pd
 from datetime import datetime
 from typing import Any
+import numpy as np
 
 
 class ThaiLotteryScraper:
@@ -19,8 +20,12 @@ class ThaiLotteryScraper:
 
     def fetch_data(self, year: int) -> str:
         """Fetch HTML data from the lottery website"""
+        assert isinstance(year, int), "Year must be an integer"
+        assert year > 0, "Year must be a positive integer"
+        assert year <= 35, "Year must be less than or equal 35"
+
         url = self.base_url.format(year=year)
-        response = requests.get(url, headers=self.headers)
+        response = requests.get(url, headers=self.headers, timeout=10)
         response.raise_for_status()
         return response.text
 
@@ -58,9 +63,9 @@ class ThaiLotteryScraper:
             last_two = all_values[6]
             top_three = all_values[7]
             bottom_two = all_values[8]
-            front_last_three = all_values[9]
-            front_three = front_last_three.split(' ')[:2]
-            last_three = front_last_three.split(' ')[2:]
+            front_last_three = all_values[9].split(' ')
+            front_three = front_last_three[:2]
+            last_three = front_last_three[2:]
 
             # Convert date
             gregorian_year = int(year) - 543
@@ -72,25 +77,31 @@ class ThaiLotteryScraper:
                 'วัน': day,
                 'เดือน': month,
                 'ปี': year,
-                'รางวัลที่1': first_prize,
+                'รางวัลที่1': np.array(first_prize.split()) if ' ' in first_prize else first_prize,
                 '2ตัวบน': last_two,
                 '3ตัวบน': top_three,
                 '2ตัวล่าง': bottom_two,
-                '3ตัวหน้า,3ตัวล่าง': front_last_three,
-                '3ตัวหน้า': front_three,
-                '3ตัวล่าง': last_three,
+                '3ตัวหน้า,3ตัวล่าง': np.array(front_last_three),
+                '3ตัวหน้า': np.array(front_three),
+                '3ตัวล่าง': np.array(last_three),
             })
 
         return data
 
+    def data2df(self, data: list[dict[str, Any]]) -> pd.DataFrame:
+        """Convert data to DataFrame"""
+        df = pd.DataFrame(data)
+
+        return df
+
     def save_to_csv(self, data: list[dict[str, Any]], filename: str = 'lottery_results.csv'):
         """Save data to CSV file"""
-        df = pd.DataFrame(data)
+        df = self.data2df(data)
         df.to_csv(filename, index=False)
 
     def save_to_parquet(self, data: list[dict[str, Any]], filename: str = 'lottery_results.parquet'):
         """Save data to Parquet file"""
-        df = pd.DataFrame(data)
+        df = self.data2df(data)
         df.to_parquet(filename, index=False)
 
     def read_csv(self, filename: str = 'lottery_results.csv') -> pd.DataFrame:
@@ -101,7 +112,7 @@ class ThaiLotteryScraper:
         """Read data from Parquet file"""
         return pd.read_parquet(filename)
 
-    def scrape(self, year: int, output_file: str = 'lottery_results.csv'):
+    def scrape(self, year: int, save: bool = False, output_file: str = 'lottery_results.csv') -> list[dict[str, Any]]:
         """Main method to scrape lottery data"""
         html_content = self.fetch_data(year)
         data = self.parse_data(html_content)
@@ -110,9 +121,18 @@ class ThaiLotteryScraper:
         # for item in data:
         #     print(item)
 
-        self.save_to_csv(data, output_file)
-        self.save_to_parquet(data, output_file.replace('.csv', '.parquet'))
+        if save:
+            self.save_to_csv(data, output_file)
+            self.save_to_parquet(data, output_file.replace('.csv', '.parquet'))
+
         return data
+
+    def scrape_df(self, year: int, save: bool = False, output_file: str = 'lottery_results.csv') -> pd.DataFrame:
+        """Scrape data and return as DataFrame"""
+        data = self.scrape(year, save, output_file)
+        df = self.data2df(data)
+
+        return df
 
 
 # Usage example
