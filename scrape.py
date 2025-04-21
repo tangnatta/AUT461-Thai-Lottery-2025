@@ -2,7 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 import pandas as pd
 from datetime import datetime
-from typing import List, Dict, Any
+from typing import Any
 
 
 class ThaiLotteryScraper:
@@ -24,7 +24,7 @@ class ThaiLotteryScraper:
         response.raise_for_status()
         return response.text
 
-    def parse_data(self, html_content: str) -> List[Dict[str, Any]]:
+    def parse_data(self, html_content: str) -> list[dict[str, Any]]:
         """Parse HTML content and extract lottery data"""
         data = []
         soup = BeautifulSoup(html_content, 'html.parser')
@@ -83,12 +83,12 @@ class ThaiLotteryScraper:
 
         return data
 
-    def save_to_csv(self, data: List[Dict[str, Any]], filename: str = 'lottery_results.csv'):
+    def save_to_csv(self, data: list[dict[str, Any]], filename: str = 'lottery_results.csv'):
         """Save data to CSV file"""
         df = pd.DataFrame(data)
         df.to_csv(filename, index=False)
 
-    def save_to_parquet(self, data: List[Dict[str, Any]], filename: str = 'lottery_results.parquet'):
+    def save_to_parquet(self, data: list[dict[str, Any]], filename: str = 'lottery_results.parquet'):
         """Save data to Parquet file"""
         df = pd.DataFrame(data)
         df.to_parquet(filename, index=False)
