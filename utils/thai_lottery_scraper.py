@@ -74,16 +74,16 @@ class ThaiLotteryScraper:
 
             data.append({
                 'date': date_obj,
-                'วัน': day,
-                'เดือน': month,
-                'ปี': year,
-                'รางวัลที่1': np.array(first_prize.split()) if ' ' in first_prize else first_prize,
-                '2ตัวบน': last_two,
-                '3ตัวบน': top_three,
-                '2ตัวล่าง': bottom_two,
-                '3ตัวหน้า,3ตัวล่าง': np.array(front_last_three),
-                '3ตัวหน้า': np.array(front_three),
-                '3ตัวล่าง': np.array(last_three),
+                'day': day,
+                'th_month': month,
+                'year': year,
+                '1st_prize': np.array(first_prize.split()) if ' ' in first_prize else first_prize,
+                '2digit_up': last_two,
+                '3digit_up': top_three,
+                '2digit_buttom': bottom_two,
+                '3digit_front,3digit_bottom': np.array(front_last_three),
+                '3digit_front': np.array(front_three),
+                '3digit_bottom': np.array(last_three),
             })
 
         return data
