@@ -1,19 +1,6 @@
 import datetime
 import pandas as pd
-
-
-def extract_dayofweek(date: datetime) -> str:
-    """
-    Extracts the day of the week from a given date.
-
-    Args:
-        date (datetime): date
-
-    Returns:
-        str: Day of the week.
-    """
-    
-    return date.weekday()
+import ephem
 
 
 def extract_zodiac_signs(date: datetime):
@@ -62,9 +49,25 @@ def extract_zodiac_signs(date: datetime):
     return thai_zodiac
 
 
+# Function to calculate moon phase (0-1 where 0=new moon, 0.5=full moon, 1=new moon again)
+def extract_moon_phase(date: datetime) -> float:
+    moon = ephem.Moon()
+    # Convert the date to a DateTime object
+    date = ephem.Date(date)
+    moon.compute(date)
+    # Moon phase is a value between 0 and 1
+    return moon.phase / 100.0  # Normalized to 0-1 scale
+
+
+def extract_moon_distance_km(date: datetime) -> float:
+    moon = ephem.Moon()
+    date = ephem.Date(date)
+    moon.compute(date)
+    au = ephem.meters_per_au
+    return moon.earth_distance * au / 1000  # Convert to km
+
+
 if __name__ == "__main__":
-    # test extract_dayofweek(datetime.datetime(2023, 10, 1))
-    print(extract_dayofweek(datetime.datetime(2023, 10, 1)))
 
     year_of_birth = 1990
     thai_zodiac = extract_zodiac_signs(datetime.datetime(year_of_birth, 1, 1))
